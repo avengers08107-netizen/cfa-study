@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CFA Level 1 学習ダッシュボード</title>
+<meta name="theme-color" content="#00A651">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="CFA学習">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#00A651; --green-d:#007A3D; --green-t:#E5F6EC; --mint:#B9F2D0;
+  --bg:#F2F5F4; --card:#FFFFFF; --ink:#1E2B27; --sub:#6A7873; --line:#E3E9E6;
+  --todo:#E6ECE9; --seen:#FFB020; --seen-ink:#5A3A00; --done:#00A651; --late:#E5484D; --blue:#2F6FEB;
+  --num:"Plus Jakarta Sans","M PLUS Rounded 1c",system-ui,sans-serif;
+  --jp:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+  --side:232px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --green:#1DBF6B; --green-d:#3FD487; --green-t:#16332A; --mint:#2D6B4C;
+    --bg:#0F1714; --card:#18231F; --ink:#E9F1ED; --sub:#93A39C; --line:#26342F;
+    --todo:#26342F; --seen:#FFB84D; --done:#1DBF6B; --late:#F16A6E; --blue:#6E9BFF;
+  }
+}
+:root[data-theme="dark"]{
+  --green:#1DBF6B; --green-d:#3FD487; --green-t:#16332A; --mint:#2D6B4C;
+  --bg:#0F1714; --card:#18231F; --ink:#E9F1ED; --sub:#93A39C; --line:#26342F;
+  --todo:#26342F; --seen:#FFB84D; --done:#1DBF6B; --late:#F16A6E; --blue:#6E9BFF;
+}
+html{height:100%}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:var(--jp);line-height:1.6;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.num{font-family:var(--num)}
+
+/* ---------- layout ---------- */
+.app{display:grid;grid-template-columns:var(--side) 1fr;min-height:100%}
+.side{position:sticky;top:0;height:100vh;height:100dvh;background:var(--card);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:22px 16px 18px;z-index:40}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px 22px}
+.brand .mk{width:36px;height:36px;border-radius:12px;background:var(--green) var(--map) center/220px;display:grid;place-items:center;flex:none}
+.brand .mk svg{width:20px;height:20px}
+.brand b{font-size:16px;font-weight:800;line-height:1.2;display:block}
+.brand small{font-size:11px;color:var(--sub)}
+.menu{display:flex;flex-direction:column;gap:4px}
+.menu button{display:flex;align-items:center;gap:12px;border:none;background:none;padding:11px 12px;border-radius:12px;font-size:14px;font-weight:700;color:var(--sub);cursor:pointer;text-align:left;position:relative}
+.menu button svg{width:20px;height:20px;flex:none}
+.menu button:hover{background:var(--bg);color:var(--ink)}
+.menu button[aria-current="page"]{background:var(--green-t);color:var(--green-d)}
+.menu button[aria-current="page"]::before{content:"";position:absolute;left:-16px;top:8px;bottom:8px;width:4px;border-radius:0 4px 4px 0;background:var(--green)}
+.promo{margin-top:auto;border-radius:20px;background:var(--green) var(--map) center/320px;color:#fff;padding:18px 16px;position:relative;overflow:hidden}
+.promo small{font-size:12px;opacity:.9;font-weight:700}
+.promo b{display:block;font-family:var(--num);font-size:34px;font-weight:800;line-height:1.1;margin:2px 0}
+.promo b span{font-size:14px;font-family:var(--jp)}
+.promo p{margin:6px 0 10px;font-size:12px;opacity:.9}
+.promo button{border:none;background:#fff;color:var(--green-d);font-weight:800;border-radius:999px;padding:7px 14px;font-size:12px;cursor:pointer}
+.save-mini{font-size:11px;color:var(--sub);padding:10px 8px 0}
+
+.topbar{display:none}
+.scrim{display:none}
+main{min-width:0;padding:26px 28px 40px}
+.page-h{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.page-h h1{font-size:24px;font-weight:800;margin:0;line-height:1.3}
+.page-h p{margin:0;color:var(--sub);font-size:13px}
+.chip-exam{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 14px 6px 6px;font-size:13px;font-weight:700;cursor:pointer}
+.chip-exam .ic{width:28px;height:28px;border-radius:50%;background:var(--green-t);display:grid;place-items:center}
+.chip-exam b{font-family:var(--num);font-size:16px;color:var(--green-d)}
+.page[hidden]{display:none}
+
+.card{background:var(--card);border-radius:20px;padding:18px 20px;min-width:0}
+.card-h{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.card-h h2{font-size:15px;font-weight:800;margin:0}
+.card-h small{font-size:12px;color:var(--sub)}
+
+/* ---------- dashboard ---------- */
+.dash{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
+.span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-4{grid-column:span 4}.span-6{grid-column:span 6}.span-3{grid-column:span 3}
+.hero{background:var(--green) var(--map) center/420px;color:#fff;border-radius:24px;padding:22px 24px;display:grid;grid-template-columns:auto 1fr;gap:10px 28px;align-items:center;position:relative;overflow:hidden}
+.hero .big{font-family:var(--num);font-weight:800;font-size:clamp(48px,7vw,68px);line-height:1}
+.hero .big small{font-size:.38em;margin-left:2px}
+.hero .lbl{font-size:13px;opacity:.9;font-weight:700}
+.hero .goal{font-size:15px;font-weight:800}
+.hero .goal span{font-weight:500;opacity:.9;font-size:13px;margin-left:6px}
+.road{position:relative;height:34px;margin-top:10px}
+.road .rail{position:absolute;left:0;right:0;top:14px;height:6px;border-radius:3px;background:rgba(255,255,255,.28)}
+.road .rail i{position:absolute;top:0;bottom:0;border-radius:3px}
+.road .rail .d{left:0;background:#fff}.road .rail .s{background:var(--seen)}
+.road .pin{position:absolute;top:3px;width:28px;height:28px;margin-left:-14px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.35);transition:left .6s cubic-bezier(.3,.8,.3,1)}
+.road .pin::after{content:"";position:absolute;inset:8px;border-radius:50%;background:var(--green)}
+.road .flag{position:absolute;right:-4px;top:9px;width:16px;height:16px;border-radius:4px;background:repeating-conic-gradient(#fff 0 25%,var(--green-d) 0 50%) 0 0/8px 8px;border:2px solid #fff}
+.hero .next{grid-column:1/-1;display:flex;gap:12px;align-items:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:10px 12px;margin-top:6px}
+.hero .next .tx{flex:1;min-width:0;font-size:14px;font-weight:700;line-height:1.4}
+.hero .next .tx small{display:block;font-size:11px;opacity:.85;font-weight:500}
+.go{border:none;background:#fff;color:var(--green-d);font-weight:800;border-radius:999px;padding:9px 14px;cursor:pointer;white-space:nowrap;font-size:13px}
+
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (min-width:1500px){.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.kpi{display:flex;flex-direction:column;gap:2px}
+.kpi .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.kpi .l{font-size:12px;color:var(--sub);font-weight:700}
+.kpi .v{font-family:var(--num);font-weight:800;font-size:28px;line-height:1.15}
+.kpi .v small{font-size:13px;color:var(--sub);font-weight:500}
+.kpi .s{align-self:flex-start;white-space:nowrap;font-size:11px;font-weight:700;display:inline-flex;gap:4px;align-items:center;padding:2px 8px;border-radius:999px;background:var(--bg);color:var(--sub);margin-top:4px}
+.kpi .s.up{background:var(--green-t);color:var(--green-d)} .kpi .s.dn{background:color-mix(in srgb,var(--late) 14%,transparent);color:var(--late)}
+.ring{width:60px;height:60px;flex:none}
+@media (max-width:760px){.ring{width:50px;height:50px}.kpis{gap:12px}.kpis .card{padding:14px}}
+.ring text{font-family:var(--num);font-weight:800;font-size:13px;fill:var(--ink)}
+
+.chart svg{width:100%;height:auto;display:block}
+.chart .ax{font-family:var(--num);font-size:10px;fill:var(--sub)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--sub);margin-top:8px}
+.legend span::before{content:"";display:inline-block;width:14px;height:4px;border-radius:2px;margin-right:6px;vertical-align:3px;background:var(--c)}
+.legend span{display:inline-flex;align-items:center;white-space:nowrap}
+.legend span::before{vertical-align:0}
+.legend span.dash::before{background:none;height:0;border-top:2px dashed var(--c)}
+
+.sbar{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:4px 10px;align-items:center;padding:6px 0}
+.sbar .n{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;min-width:0}
+.sbar .n i{width:8px;height:8px;border-radius:50%;flex:none}
+.sbar .n span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sbar .p{font-family:var(--num);font-size:12px;text-align:right;color:var(--sub);font-weight:700}
+.bar{grid-column:1/-1;display:flex;height:7px;border-radius:4px;overflow:hidden;background:var(--todo)}
+.bar i{display:block;height:100%}
+.bar .d{background:var(--done)}.bar .s{background:var(--seen)}
+
+.task{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.task:last-child{border-bottom:none}
+.task .ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none;font-family:var(--num);font-weight:800;font-size:12px;color:var(--sc);background:color-mix(in srgb,var(--sc) 14%,transparent)}
+.task .tx{flex:1;min-width:0;font-size:13px;font-weight:700;line-height:1.4}
+.task .tx small{display:block;font-size:11px;color:var(--sub);font-weight:500}
+.task .tx small.late{color:var(--late);font-weight:700}
+.tick{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:var(--card);cursor:pointer;display:grid;place-items:center;flex:none;color:transparent}
+.tick:hover{border-color:var(--green);color:var(--green)}
+.tick[data-st="1"]{background:var(--seen);border-color:var(--seen);color:var(--seen-ink)}
+.tick[data-st="2"]{background:var(--green);border-color:var(--green);color:#fff}
+.empty{color:var(--sub);font-size:13px;padding:8px 0}
+
+.cal-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.cal-h b{font-family:var(--num);font-size:15px}
+.cal-h button{border:none;background:var(--bg);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;color:var(--sub)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}
+.cal .w{font-size:10px;color:var(--sub);font-weight:700;padding-bottom:4px}
+.cal button{border:none;background:none;aspect-ratio:1;border-radius:10px;font-family:var(--num);font-size:12px;font-weight:700;cursor:pointer;position:relative;color:var(--ink);padding:0}
+.cal button.out{color:var(--sub);opacity:.4}
+.cal button.has::after{content:"";position:absolute;left:50%;bottom:3px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--c,var(--green))}
+.cal button.today{background:var(--green);color:#fff}
+.cal button.today::after{background:#fff}
+.cal button.sel{box-shadow:inset 0 0 0 2px var(--green)}
+.cal button.ev{background:var(--green-t)}
+.cal-day{margin-top:10px;border-top:1px solid var(--line);padding-top:8px;font-size:12px}
+.cal-day div{padding:3px 0;display:flex;gap:6px;align-items:baseline}
+.cal-day i{width:7px;height:7px;border-radius:50%;flex:none;transform:translateY(-1px)}
+
+.miles .m{display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.miles .m:last-child{border-bottom:none}
+.miles .dt{width:46px;text-align:center;border-radius:12px;background:var(--bg);padding:4px 0;flex:none}
+.miles .dt b{display:block;font-family:var(--num);font-size:16px;line-height:1.1}
+.miles .dt small{font-size:10px;color:var(--sub)}
+.miles .tx{font-size:13px;font-weight:700;flex:1;line-height:1.4}
+.miles .tx small{display:block;font-size:11px;color:var(--sub);font-weight:500}
+.miles .m.exam .dt{background:color-mix(in srgb,var(--late) 14%,transparent);color:var(--late)}
+
+.weak .w{display:flex;align-items:center;gap:10px;padding:8px 0}
+.weak .rk{width:26px;height:26px;border-radius:50%;background:var(--late);color:#fff;font-family:var(--num);font-weight:800;font-size:12px;display:grid;place-items:center;flex:none}
+.weak .nm{flex:1;font-size:13px;font-weight:700;min-width:0}
+.weak .nm small{display:block;font-size:11px;color:var(--sub);font-weight:500}
+.weak .pc{font-family:var(--num);font-weight:800}
+.link{border:none;background:none;color:var(--green-d);font-weight:800;font-size:12px;cursor:pointer;padding:0}
+
+/* ---------- matrix ---------- */
+.mx-tools{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.paint{display:flex;background:var(--bg);border-radius:999px;padding:3px;gap:2px;flex-wrap:wrap}
+.paint button{border:none;background:none;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:800;color:var(--sub);cursor:pointer;display:flex;align-items:center;gap:6px}
+.paint button i{width:10px;height:10px;border-radius:3px;background:var(--c)}
+.paint button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.mx-leg{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--sub)}
+.mx-leg span{display:flex;align-items:center;gap:5px}
+.mx-leg i{width:12px;height:12px;border-radius:4px;background:var(--c)}
+.mx-leg i.lk{background:transparent;border:1.5px dashed var(--sub)}
+.mx-leg i.lt{background:var(--card);box-shadow:inset 0 0 0 2px var(--late)}
+.mx-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.mx{border-collapse:separate;border-spacing:6px;min-width:520px;width:100%;table-layout:fixed}
+.mx th.rh{width:220px}
+@media (max-width:760px){.mx{border-spacing:5px;min-width:440px}.mx td.rh{min-width:0}.rh .nm{font-size:12px}.cell{min-width:52px;height:54px}}
+.mx th{font-size:11px;color:var(--sub);font-weight:700;text-align:center;padding:0 0 2px}
+.mx th.rh,.mx td.rh{position:sticky;left:0;background:var(--card);z-index:2;text-align:left}
+.mx td.rh{padding-right:6px}
+.rh .nm span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rh .nm{font-size:13px;font-weight:800;display:flex;align-items:center;gap:8px}
+.rh .nm i{width:8px;height:8px;border-radius:50%;flex:none}
+.rh .mt{display:flex;align-items:center;gap:8px;margin-top:4px}
+.rh .mt .bar{flex:1;height:5px}
+.rh .mt span{font-family:var(--num);font-size:11px;color:var(--sub);font-weight:700;white-space:nowrap}
+.cell{width:100%;min-width:56px;height:58px;border:none;border-radius:12px;background:var(--todo);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;transition:transform .12s,background .2s;color:var(--ink);padding:2px}
+.cell:hover{transform:scale(1.05)}
+.cell b{font-family:var(--num);font-size:14px;font-weight:800;line-height:1.1}
+.cell small{font-size:10px;font-weight:700;opacity:.75;line-height:1.1}
+.cell[data-st="1"]{background:var(--seen);color:var(--seen-ink)}
+.cell[data-st="2"]{background:var(--green);color:#fff}
+.cell.late[data-st="0"]{background:var(--card);box-shadow:inset 0 0 0 2px var(--late);color:var(--late)}
+.cell.lock[data-st="0"]{background:transparent;border:1.5px dashed color-mix(in srgb,var(--sub) 60%,transparent);color:var(--sub)}
+.cell.picked{outline:3px solid var(--blue);outline-offset:2px}
+.mx td.na{background:transparent}
+.mx-sum td{padding-top:6px}
+.mx-detail{margin-top:14px;background:var(--bg);border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;min-height:62px}
+.mx-detail .tx{flex:1;min-width:200px;font-size:14px;font-weight:800;line-height:1.4}
+.mx-detail .tx small{display:block;font-size:12px;color:var(--sub);font-weight:500}
+.seg{display:flex;background:var(--card);border-radius:999px;padding:3px;gap:2px}
+.seg button{border:none;background:transparent;border-radius:999px;padding:6px 12px;font-size:12px;cursor:pointer;color:var(--sub);font-weight:800;white-space:nowrap}
+.seg button[aria-pressed="true"][data-v="0"]{background:var(--bg);color:var(--ink)}
+.seg button[aria-pressed="true"][data-v="1"]{background:var(--seen);color:var(--seen-ink)}
+.seg button[aria-pressed="true"][data-v="2"]{background:var(--green);color:#fff}
+.mx-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.mini{background:var(--card);border-radius:16px;padding:12px 16px}
+.mini .v{font-family:var(--num);font-size:22px;font-weight:800;line-height:1.2}
+.mini .v small{font-size:12px;color:var(--sub);font-weight:500}
+.mini .l{font-size:12px;color:var(--sub);font-weight:700}
+.mini.late .v{color:var(--late)}
+
+/* ---------- analysis ---------- */
+.an{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:16px;align-items:start}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--sub);font-weight:700}
+.form .full{grid-column:1/-1}
+input,select,textarea{font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1.5px solid transparent;border-radius:12px;padding:10px 12px;min-width:0;width:100%}
+input:focus,select:focus{border-color:var(--green);outline:none}
+.btns{grid-column:1/-1;display:flex;gap:8px}
+.btn{flex:1;border:none;background:var(--green);color:#fff;border-radius:999px;padding:12px 16px;font-weight:800;cursor:pointer;font-size:15px}
+.btn.ghost{flex:0 0 auto;background:var(--bg);color:var(--ink)}
+.btn[hidden]{display:none}
+.form-msg{font-size:12px;color:var(--late);min-height:18px;margin-top:6px}
+.edit-bar{display:none;font-size:13px;color:var(--green-d);font-weight:800;margin-bottom:10px;background:var(--green-t);border-radius:10px;padding:8px 12px}
+.edit-bar.on{display:block}
+.acc{display:grid;grid-template-columns:140px 1fr 64px 70px;gap:10px;align-items:center;padding:8px 6px;border-radius:10px;cursor:pointer;border:none;background:none;width:100%;text-align:left}
+.acc:hover,.acc[aria-pressed="true"]{background:var(--bg)}
+.acc .n{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
+.acc .n small{display:block;font-size:11px;color:var(--sub);font-weight:500}
+.track{position:relative;height:12px;background:var(--todo);border-radius:6px}
+.track i{position:absolute;left:0;top:0;bottom:0;border-radius:6px}
+.track .tgt{position:absolute;top:-4px;bottom:-4px;width:0;border-left:2px dotted var(--ink);opacity:.5}
+.acc .v{font-family:var(--num);font-weight:800;font-size:15px;text-align:right}
+.acc .v small{font-size:11px;font-weight:500;color:var(--sub);display:block}
+.acc svg{width:70px;height:26px;display:block}
+.log .it{display:grid;grid-template-columns:48px 1fr auto auto;gap:4px 10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
+.log .it:last-child{border-bottom:none}
+.log .it.editing{background:var(--green-t);border-radius:10px;padding-left:8px;padding-right:8px}
+.log .d{font-family:var(--num);color:var(--sub);font-weight:700}
+.log .mm{display:block;color:var(--sub);font-size:12px}
+.log .r{font-family:var(--num);font-weight:800;text-align:right}
+.log .acts{display:flex;gap:6px;justify-content:flex-end}
+.log .acts button{border:none;background:var(--bg);color:var(--sub);cursor:pointer;font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px}
+.log .acts .del.armed{background:var(--late);color:#fff}
+.note{font-size:12px;color:var(--sub);margin:8px 0 0}
+
+/* ---------- settings ---------- */
+.set{display:grid;gap:14px;max-width:560px}
+.set label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--sub);font-weight:700}
+.switch{display:flex!important;flex-direction:row!important;align-items:center;justify-content:space-between;gap:12px;font-size:14px!important;color:var(--ink)!important}
+.switch input{width:auto;accent-color:var(--green);transform:scale(1.3)}
+.hint{font-size:12px;color:var(--sub);background:var(--bg);border-radius:12px;padding:10px 12px}
+.danger{border:none;background:none;color:var(--late);font-weight:700;cursor:pointer;padding:6px 0;text-align:left;font-size:14px}
+
+.sync-banner{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:color-mix(in srgb,var(--seen) 18%,var(--card));border-radius:16px;padding:12px 16px;margin-bottom:16px;font-size:13px;font-weight:700}
+.sync-banner[hidden]{display:none}
+.row-btns{display:flex;gap:8px;flex-wrap:wrap}
+.row-btns .btn{flex:none}
+/* ---------- responsive ---------- */
+@media (max-width:1180px){
+  .span-8,.span-4{grid-column:span 12}
+  .span-3{grid-column:span 6}
+  .dash .side-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+}
+@media (max-width:900px){
+  .an{grid-template-columns:1fr}
+  .span-6{grid-column:span 12}
+  .mx-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:760px){
+  .app{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;bottom:0;width:260px;height:auto;transform:translateX(-105%);transition:transform .25s ease;padding-top:calc(22px + env(safe-area-inset-top,0px));padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));box-shadow:8px 0 30px -10px rgba(0,0,0,.3)}
+  .app.open .side{transform:none}
+  .app.open .scrim{display:block;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:35}
+  .topbar{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:30;background:var(--card);border-bottom:1px solid var(--line);padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top,0px))}
+  .topbar button{border:none;background:var(--bg);width:40px;height:40px;border-radius:12px;display:grid;place-items:center;cursor:pointer}
+  .topbar b{font-size:16px;font-weight:800;flex:1}
+  main{padding:16px 14px 32px}
+  .page-h h1{font-size:20px}
+  .dash{gap:12px}
+  .span-3{grid-column:span 12}
+  .dash .side-col{grid-template-columns:1fr}
+  .hero{grid-template-columns:1fr;padding:18px}
+  .acc{grid-template-columns:96px 1fr 56px}.acc svg{display:none}
+  .log .it{grid-template-columns:44px 1fr auto}.log .acts{grid-column:2/-1}
+  .kpi .v{font-size:22px}
+}
+@media (max-width:760px) and (min-width:420px){.span-3{grid-column:span 6}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <aside class="side" aria-label="メニュー">
+    <div class="brand">
+      <span class="mk"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="2.3"/><circle cx="18" cy="5" r="2.3"/><path d="M8.3 19H15a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h6.7"/></svg></span>
+      <div><b>CFA L1 Route</b><small>TAC 通信講座</small></div>
+    </div>
+    <nav class="menu">
+      <button data-page="dash" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="9" rx="2"/><rect x="13.5" y="3" width="7.5" height="5" rx="2"/><rect x="13.5" y="11" width="7.5" height="10" rx="2"/><rect x="3" y="15" width="7.5" height="6" rx="2"/></svg>ダッシュボード</button>
+      <button data-page="matrix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="3" width="5" height="5" rx="1.2"/><rect x="9.5" y="3" width="5" height="5" rx="1.2"/><rect x="16" y="3" width="5" height="5" rx="1.2"/><rect x="3" y="9.5" width="5" height="5" rx="1.2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1.2"/><rect x="3" y="16" width="5" height="5" rx="1.2"/></svg>進捗マトリクス</button>
+      <button data-page="analysis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V11M10 20V4M16 20v-6M22 20H2"/></svg>演習・弱点分析</button>
+      <button data-page="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>設定</button>
+    </nav>
+    <div class="promo" id="promo"></div>
+    <div class="save-mini" id="saveState">読み込み中…</div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <div style="min-width:0">
+    <div class="topbar">
+      <button id="menuBtn" aria-label="メニューを開く"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
+      <b id="topTitle">ダッシュボード</b>
+    </div>
+    <main>
+      <!-- ===== ダッシュボード ===== -->
+      <section class="page" id="page-dash">
+        <div class="sync-banner" id="syncBanner" hidden><span>スプレッドシートとの同期が未設定です。今はこの端末の中だけに保存しています。</span><button class="go" data-goto="settings" style="background:var(--ink);color:var(--card)">同期を設定する</button></div>
+        <div class="page-h">
+          <div><h1>ダッシュボード</h1><p id="todayLabel"></p></div>
+          <button class="chip-exam" id="examChip"></button>
+        </div>
+        <div class="dash">
+          <div class="span-8" style="display:grid;gap:16px;min-width:0">
+            <div class="hero" id="hero"></div>
+            <div class="kpis" id="kpis"></div>
+            <div class="card chart">
+              <div class="card-h"><h2>累積の進み具合</h2><small id="chartSub"></small></div>
+              <div id="cumChart"></div>
+              <div class="legend"><span class="dash" style="--c:var(--sub)">予定</span><span style="--c:var(--green)">視聴済み</span><span style="--c:var(--seen)">復習済み</span></div>
+            </div>
+            <div class="dash" style="gap:16px">
+              <div class="card span-6"><div class="card-h"><h2>今週やること</h2><small id="weekRange"></small></div><div id="tasks"></div></div>
+              <div class="card span-6"><div class="card-h"><h2>科目別の進捗</h2><button class="link" data-goto="matrix">マトリクスで見る</button></div><div id="sbars"></div></div>
+            </div>
+          </div>
+          <div class="span-4 side-col" style="display:grid;gap:16px;align-content:start;min-width:0">
+            <div class="card"><div class="cal-h"><button id="calPrev" aria-label="前の月">‹</button><b id="calTitle"></b><button id="calNext" aria-label="次の月">›</button></div><div class="cal" id="cal"></div><div class="cal-day" id="calDay"></div></div>
+            <div class="card miles"><div class="card-h"><h2>これからの予定</h2></div><div id="miles"></div></div>
+            <div class="card weak"><div class="card-h"><h2>弱点トップ3</h2><button class="link" data-goto="analysis">分析を見る</button></div><div id="weak"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== 進捗マトリクス ===== -->
+      <section class="page" id="page-matrix" hidden>
+        <div class="page-h"><div><h1>進捗マトリクス</h1><p>科目ごとに講義の状態を一覧。マスをタップして記録します</p></div></div>
+        <div class="mx-stats" id="mxStats"></div>
+        <div class="card">
+          <div class="mx-tools">
+            <div class="paint" role="group" aria-label="タップしたときの動作" id="paint"></div>
+            <div class="mx-leg">
+              <span><i style="--c:var(--todo)"></i>未着手</span><span><i style="--c:var(--seen)"></i>視聴済み</span><span><i style="--c:var(--green)"></i>復習済み</span><span><i class="lt"></i>予定超過</span><span><i class="lk"></i>配信前</span>
+            </div>
+          </div>
+          <div class="mx-wrap"><table class="mx" id="mx"></table></div>
+          <div class="mx-detail" id="mxDetail"></div>
+        </div>
+      </section>
+
+      <!-- ===== 分析 ===== -->
+      <section class="page" id="page-analysis" hidden>
+        <div class="page-h"><div><h1>演習・弱点分析</h1><p>問題を解いたら分野ごとに結果を記録</p></div></div>
+        <div class="an">
+          <div style="display:grid;gap:16px;min-width:0">
+            <div class="card">
+              <div class="card-h"><h2>結果を記録</h2></div>
+              <div class="edit-bar" id="editBar">記録を編集中です。内容を直して「更新する」を押してください。</div>
+              <div class="form">
+                <label>日付<input type="date" id="fDate"></label>
+                <label>教材<select id="fSrc"><option>TAC Webテスト</option><option>Schweser TOPIC QUIZ</option><option>Schweser Mock Exam</option><option>演習講義</option><option>SchweserNotes 章末問題</option><option>その他</option></select></label>
+                <label class="full">分野<select id="fTopic"></select></label>
+                <label>問題数<input type="number" id="fQ" min="1" inputmode="numeric" placeholder="20"></label>
+                <label>正解数<input type="number" id="fC" min="0" inputmode="numeric" placeholder="14"></label>
+                <label class="full">間違えた論点（任意）<input type="text" id="fMemo" placeholder="例：デュレーションの計算"></label>
+                <div class="btns"><button class="btn" id="fAdd">記録する</button><button class="btn ghost" id="fCancel" hidden>キャンセル</button></div>
+              </div>
+              <div class="form-msg" id="fMsg"></div>
+            </div>
+            <div id="prio"></div>
+          </div>
+          <div style="display:grid;gap:16px;min-width:0" id="anRight"></div>
+        </div>
+      </section>
+
+      <!-- ===== 設定 ===== -->
+      <section class="page" id="page-settings" hidden>
+        <div class="page-h"><div><h1>設定</h1></div></div>
+        <div class="card set">
+          <label>受講形式<select id="sFormat"><option value="web">Web通信講座</option><option value="dvd">DVD通信講座</option></select></label>
+          <label>予定の決め方<select id="sPace"><option value="plan">完了目標日から逆算</option><option value="class">教室講座の日程に合わせる</option></select></label>
+          <label id="sTargetWrap">全講義の完了目標日<input type="date" id="sTarget" min="2026-10-10" max="2027-06-10"></label>
+          <div class="hint" id="planHint"></div>
+          <label>本試験の日<input type="date" id="sExam" min="2027-01-01" max="2027-12-31"></label>
+          <label class="switch">入門講義を含める（入門＋Level1対策講座の方）<input type="checkbox" id="introToggle"></label>
+          <button class="danger" id="reset">講義の視聴記録をリセット</button>
+        </div>
+        <div class="card set" style="margin-top:16px">
+          <h2 style="font-size:15px;margin:0">スプレッドシートとの同期</h2>
+          <p class="note" style="margin:0">Apps Script のウェブアプリURLと合言葉を入れると、PCとスマホで同じ記録を使えます。端末ごとに一度だけ設定します。</p>
+          <label>ウェブアプリのURL<input id="cUrl" type="url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off"></label>
+          <label>合言葉<input id="cToken" type="password" autocomplete="off"></label>
+          <div class="row-btns"><button class="btn" id="cSave">保存して接続</button><button class="btn ghost" id="cOff">同期をやめる</button></div>
+          <div class="hint" id="cMsg">未設定</div>
+          <button class="link" id="cLink" style="text-align:left">スマホ用の設定リンクを作る</button>
+          <textarea id="cLinkOut" rows="3" readonly hidden style="font-size:12px;font-family:monospace"></textarea>
+        </div>
+        <div class="card set" style="margin-top:16px">
+          <h2 style="font-size:15px;margin:0">データの読み込み・書き出し</h2>
+          <p class="note" style="margin:0">以前のアプリ（Claude上の版）で書き出したデータを下に貼り付けて「読み込む」を押すと、記録を引き継げます。バックアップの書き出しにも使えます。</p>
+          <textarea id="ioText" rows="5" placeholder="書き出したデータをここに貼り付け" style="font-size:12px;font-family:monospace"></textarea>
+          <div class="row-btns"><button class="btn" id="imBtn">読み込む</button><button class="btn ghost" id="exBtn">書き出す</button></div>
+          <div class="hint" id="ioMsg" hidden></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<script>
+(function(){
+  const mapSvg=`<svg xmlns="http://www.w3.org/2000/svg" width="420" height="300" viewBox="0 0 420 300"><g fill="none" stroke="#fff" stroke-linecap="round"><g stroke-opacity=".10" stroke-width="10"><path d="M-10 60 C80 40 140 90 230 70 S380 30 430 50"/><path d="M60 -10 L90 310"/><path d="M-10 200 C100 180 200 240 300 210 S400 170 430 190"/><path d="M300 -10 C280 100 330 180 310 310"/></g><g stroke-opacity=".08" stroke-width="3"><path d="M-10 130 H430"/><path d="M180 -10 V310"/><path d="M-10 260 H430"/><path d="M370 -10 V310"/><path d="M120 120 L240 30"/><path d="M200 300 L260 150 L420 120"/></g><path d="M40 250 C120 230 150 150 210 140 S320 90 360 40" stroke-opacity=".28" stroke-width="3" stroke-dasharray="2 9"/></g><g fill="#fff" fill-opacity=".22"><circle cx="40" cy="250" r="5"/><circle cx="360" cy="40" r="5"/></g></svg>`;
+  document.documentElement.style.setProperty("--map",`url("data:image/svg+xml,${encodeURIComponent(mapSvg)}")`);
+  // ---------- 講義データ ----------
+  const SUBJ={intro:"入門講義",quant:"Quantitative Methods",cf:"Corporate Finance",eq:"Equities",econ:"Economics",fsa:"Financial Statement Analysis",fi:"Fixed Income",eth:"Ethical & Professional Standards",pc:"Portfolio Construction",der:"Derivatives",alt:"Alternative Investments",rev:"直前：論点まとめ",drill:"直前：演習",psm:"PSM対策"};
+  const SHORT={intro:"入門",quant:"QM",cf:"CF",eq:"EQ",econ:"Econ",fsa:"FSA",fi:"FI",eth:"Ethics",pc:"PC",der:"Deriv",alt:"Alt",rev:"まとめ",drill:"演習",psm:"PSM"};
+  const SCOL={intro:"#6B7A75",quant:"#2F6FEB",cf:"#8B5CF6",eq:"#0E9F6E",econ:"#D97706",fsa:"#0891B2",fi:"#DB2777",eth:"#B45309",pc:"#4F46E5",der:"#DC2626",alt:"#65A30D",rev:"#007A3D",drill:"#007A3D",psm:"#475569"};
+  const L=[];
+  function add(id,sec,no,title,subj,date,slot,release){L.push({id,sec,no,title,subj,date,slot,release});}
+  const iT=["英語も学べる企業・証券分析入門〔1〕","英語も学べる企業・証券分析入門〔2〕","英語も学べる企業・証券分析入門〔3〕","英語も学べる企業・証券分析入門〔4〕","英語も学べる資産運用・リスク管理入門〔1〕","英語も学べる資産運用・リスク管理入門〔2〕"];
+  const iD=["2026-11-01","2026-11-01","2026-11-08","2026-11-08","2026-11-15","2026-11-15"];
+  iT.forEach((t,i)=>add("i"+(i+1),"入門講義",i+1,t,"intro",iD[i],i%2,"2026-10-09"));
+  const B=[["CFA試験のための数学基礎","quant","2026-11-22"],["Quantitative Methods〔1〕","quant","2026-11-22"],["Quantitative Methods〔2〕","quant","2026-11-29"],["Quantitative Methods〔3〕","quant","2026-11-29"],["Corporate Finance〔1〕","cf","2026-12-06"],["Corporate Finance〔2〕","cf","2026-12-06"],["Equities〔1〕","eq","2026-12-13"],["Equities〔2〕","eq","2026-12-13"],["Equities〔3〕","eq","2026-12-20"],["Economics〔1〕","econ","2026-12-20"],["Economics〔2〕","econ","2027-01-10"],["Economics〔3〕","econ","2027-01-10"],["Financial Statement Analysis〔1〕","fsa","2027-01-17"],["Financial Statement Analysis〔2〕","fsa","2027-01-17"],["Financial Statement Analysis〔3〕","fsa","2027-01-24"],["Financial Statement Analysis〔4〕","fsa","2027-01-24"],["Fixed Income〔1〕","fi","2027-01-31"],["Fixed Income〔2〕","fi","2027-01-31"],["Fixed Income〔3〕","fi","2027-02-07"],["Ethical and Professional Standards〔1〕","eth","2027-02-07"],["Ethical and Professional Standards〔2〕","eth","2027-02-14"],["Ethical and Professional Standards〔3〕","eth","2027-02-14"],["Portfolio Construction〔1〕","pc","2027-02-21"],["Portfolio Construction〔2〕","pc","2027-02-21"],["Derivatives〔1〕","der","2027-02-28"],["Derivatives〔2〕","der","2027-02-28"],["Alternative Investments〔1〕","alt","2027-03-07"],["Alternative Investments〔2〕","alt","2027-03-07"]];
+  B.forEach((b,i)=>{const n=i+1;add("b"+n,"基本講義",n,b[0],b[1],b[2],i%2,n<=9?"2026-10-09":n<=19?"2026-11-06":"2026-12-04");});
+  [["論点まとめ〔1〕QM, Econ","2027-03-21",0],["論点まとめ〔2〕FSA, EPS","2027-03-21",1],["論点まとめ〔3〕EQ, CF","2027-03-28",0],["論点まとめ〔4〕FI, Deriv","2027-03-28",1],["論点まとめ〔5〕PC, Alternatives","2027-04-04",0]]
+    .forEach((r,i)=>add("r"+(i+1),"直前講義：論点まとめ",i+1,r[0],"rev",r[1],r[2],"2026-12-18"));
+  ["演習〔1〕QM, EQ, PC（Mock Exam 1, 2）","演習〔2〕FSA, CF, EPS（Mock Exam 1, 2）","演習〔3〕Econ, FI, Derivatives, AI（Mock Exam 1, 2）"]
+    .forEach((t,i)=>add("d"+(i+1),"直前講義：演習",i+1,t,"drill",null,null,"2027-02-05"));
+  add("p1","PSM対策",1,"Financial Modeling / Python Programming 基礎","psm",null,null,"2026-12-04");
+
+  const TOPICS=[["eth",15,20],["quant",6,9],["econ",6,9],["fsa",11,14],["cf",6,9],["eq",11,14],["fi",11,14],["der",5,8],["alt",7,10],["pc",8,12]];
+  const TNAME={eth:"Ethics",quant:"Quantitative Methods",econ:"Economics",fsa:"Financial Statement Analysis",cf:"Corporate Issuers",eq:"Equity Investments",fi:"Fixed Income",der:"Derivatives",alt:"Alternative Investments",pc:"Portfolio Management"};
+  const TARGET=70;
+  const DVD={"2026-10-09":"2026-10-07","2026-11-06":"2026-11-04","2026-12-04":"2026-12-02","2026-12-18":"2026-12-16","2027-02-05":"2027-02-03"};
+  const MILES={
+    web:[["2026-10-09","Web配信開始（入門・基本1〜9）"],["2026-11-06","基本10〜19 配信"],["2026-11-30","TAC Webテスト利用開始"],["2026-12-04","基本20〜28・PSM 配信"],["2026-12-18","論点まとめ 配信"],["2027-02-03","Mock Exams 発送"],["2027-02-05","演習 配信"],["2027-06-10","Webフォロー視聴期限"]],
+    dvd:[["2026-10-07","DVD発送（入門・基本1〜9）"],["2026-11-04","基本10〜19 発送"],["2026-11-30","TAC Webテスト利用開始"],["2026-12-02","基本20〜28・PSM 発送"],["2026-12-16","論点まとめ 発送"],["2027-02-03","演習・Mock Exams 発送"],["2027-06-10","Webフォロー視聴期限"]]
+  };
+  const SEC_ORDER={intro:0,quant:1,cf:1,eq:1,econ:1,fsa:1,fi:1,eth:1,pc:1,der:1,alt:1,psm:2,rev:3,drill:4};
+
+  // ---------- 状態 ----------
+  const DEFAULT={status:{},when:{},includeIntro:true,examDate:"",logs:[],topicFilter:"",format:"web",pace:"plan",target:"2027-04-04"};
+  let state=JSON.parse(JSON.stringify(DEFAULT));
+  let docRef=null,saveTimer=null,page="dash",paint="cycle",picked=null,calMonth=null,calSel=null;
+  const LS_KEY="cfa-l1-tracker-v1";
+  const today=new Date();today.setHours(0,0,0,0);
+  const D=s=>{const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d);};
+  const pad=n=>String(n).padStart(2,"0");
+  const S_=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+  const TODAY=S_(today);
+  const fmt=s=>{const d=D(s);return(d.getMonth()+1)+"/"+d.getDate();};
+  const wk=["日","月","火","水","木","金","土"];
+  const fmtW=s=>fmt(s)+"（"+wk[D(s).getDay()]+"）";
+  const addDays=(s,n)=>{const d=D(s);d.setDate(d.getDate()+n);return S_(d);};
+  const st=id=>state.status[id]||0;
+  const esc=s=>String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+  const active=()=>L.filter(l=>state.includeIntro||l.subj!=="intro").sort((a,b)=>SEC_ORDER[a.subj]-SEC_ORDER[b.subj]||L.indexOf(a)-L.indexOf(b));
+  const availDate=l=>state.format==="dvd"?(DVD[l.release]||l.release):l.release;
+  const isAvail=l=>D(availDate(l))<=today;
+  const weekStart=s=>{const d=D(s);d.setDate(d.getDate()-((d.getDay()+6)%7));return S_(d);};
+  const byId=id=>L.find(l=>l.id===id);
+  const $=id=>document.getElementById(id);
+
+  let PLAN={};
+  function buildPlan(items){
+    PLAN={};
+    if(state.pace==="class"){items.forEach(l=>{if(l.date)PLAN[l.id]=l.date;});return;}
+    const start=D(items.map(availDate).sort()[0]);
+    const end=D(state.target||DEFAULT.target);
+    const span=Math.max(1,(end-start)/864e5);
+    let prev=start;
+    items.forEach((l,i)=>{
+      let d=new Date(start.getTime()+Math.round(span*(i+1)/items.length)*864e5);
+      const a=D(availDate(l));if(d<a)d=a;if(d<prev)d=prev;
+      prev=d;PLAN[l.id]=S_(d);
+    });
+  }
+  const due=l=>PLAN[l.id]||null;
+  const isLate=l=>due(l)&&D(due(l))<today&&st(l.id)===0;
+  const seenAt=l=>(state.when[l.id]&&state.when[l.id].s)||(st(l.id)>=1?TODAY:null);
+  const doneAt=l=>(state.when[l.id]&&state.when[l.id].r)||(st(l.id)===2?TODAY:null);
+
+  // ---------- 共通部品 ----------
+  function ring(p,color,label){
+    const r=26,c=2*Math.PI*r,v=Math.max(0,Math.min(1,p));
+    return `<svg class="ring" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="${r}" fill="none" stroke="var(--todo)" stroke-width="7"/><circle cx="32" cy="32" r="${r}" fill="none" stroke="${color}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c*v} ${c}" transform="rotate(-90 32 32)"/><text x="32" y="36.5" text-anchor="middle">${label}</text></svg>`;
+  }
+  const checkSvg=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`;
+
+  // ---------- 描画 ----------
+  function render(){
+    const items=active();
+    buildPlan(items);
+    renderShell(items);
+    renderDash(items);
+    renderMatrix(items);
+    renderAnalysis();
+    renderSettings(items);
+  }
+
+  function renderShell(items){
+    const days=state.examDate?Math.ceil((D(state.examDate)-today)/864e5):null;
+    $("promo").innerHTML=days!==null
+      ?`<small>本試験まで</small><b>${days}<span> 日</span></b><p>${fmtW(state.examDate)}　あと${items.filter(l=>st(l.id)===0).length}講義</p><button data-goto="settings">日付を変更</button>`
+      :`<small>本試験の日</small><b style="font-size:22px">未設定</b><p>設定するとカウントダウンが出ます</p><button data-goto="settings">試験日を設定</button>`;
+    $("examChip").innerHTML=`<span class="ic">🏁</span>${days!==null?`本試験まで <b>${days}</b> 日`:"試験日を設定"}`;
+    $("todayLabel").textContent=`${today.getFullYear()}年${fmtW(TODAY)}`;
+  }
+
+  function renderDash(items){
+    const total=items.length;
+    const seen=items.filter(l=>st(l.id)>=1).length, done=items.filter(l=>st(l.id)===2).length;
+    const planned=items.filter(due);
+    const expected=planned.filter(l=>D(due(l))<=today).length;
+    const seenP=planned.filter(l=>st(l.id)>=1).length;
+    const diff=seenP-expected;
+    const cw=weekStart(TODAY), cwEnd=addDays(cw,6);
+    const thisWeekSeen=items.filter(l=>{const s=seenAt(l);return s&&s>=cw&&s<=cwEnd;}).length;
+
+    // hero
+    const far=D("2099-01-01");
+    const nx=items.filter(l=>st(l.id)===0&&isAvail(l)).sort((a,b)=>(due(a)?D(due(a)):far)-(due(b)?D(due(b)):far)||items.indexOf(a)-items.indexOf(b))[0];
+    let nextHtml;
+    if(nx) nextHtml=`<div class="tx"><small>次はこの講義${due(nx)?"・目安 "+fmtW(due(nx)):""}</small>${nx.title}</div><button class="go" data-quick="${nx.id}">視聴済みにする</button>`;
+    else{
+      const nr=items.map(availDate).filter(r=>D(r)>today).sort()[0];
+      const what=state.format==="dvd"?"DVDの発送":"Web配信";
+      nextHtml=`<div class="tx"><small>次の講義</small>${items.some(isAvail)?"利用できる講義はすべて視聴済み"+(nr?`。次の${what}は ${fmtW(nr)}`:""):`${what}は ${fmtW(nr)} から。最初は「${items[0].title}」`}</div>`;
+    }
+    $("hero").innerHTML=`<div><div class="lbl">全体の視聴済み</div><div class="big">${Math.round(seen/total*100)}<small>%</small></div></div>
+      <div><div class="goal">あと ${total-seen} 講義<span>${state.pace==="plan"?"ゴール "+fmtW(state.target):"教室講座のペース"}</span></div>
+      <div class="road" aria-hidden="true"><div class="rail"><i class="d" style="width:${done/total*100}%"></i><i class="s" style="left:${done/total*100}%;width:${(seen-done)/total*100}%"></i></div><span class="pin" style="left:${seen/total*100}%"></span><span class="flag"></span></div></div>
+      <div class="next">${nextHtml}</div>`;
+
+    // KPI
+    const S=TOPICS.map(([k])=>statsFor(k));
+    const tq=S.reduce((s,x)=>s+x.q,0), tc=S.reduce((s,x)=>s+x.c,0);
+    let paceSub;
+    if(expected===0){const first=planned.map(l=>D(due(l))).sort((a,b)=>a-b)[0];paceSub=`最初の予定まで ${Math.max(0,Math.round((first-today)/864e5))}日`;}
+    else paceSub=`予定 ${expected} / 実績 ${seenP}`;
+    $("kpis").innerHTML=[
+      {l:"視聴済み",v:`${seen}<small> / ${total}</small>`,r:ring(seen/total,"var(--green)",Math.round(seen/total*100)+"%"),s:`今週 +${thisWeekSeen}`,c:thisWeekSeen?"up":""},
+      {l:"復習済み",v:`${done}<small> / ${total}</small>`,r:ring(done/total,"var(--seen)",Math.round(done/total*100)+"%"),s:`復習待ち ${seen-done}`,c:""},
+      {l:"予定との差",v:`${diff>0?"+":""}${diff}<small> 講義</small>`,r:ring(expected?Math.min(1,seenP/expected):0,diff>=0?"var(--green)":"var(--late)",expected?Math.round(seenP/expected*100)+"%":"—"),s:paceSub,c:expected?(diff>=0?"up":"dn"):""},
+      {l:"平均正答率",v:tq?`${Math.round(tc/tq*100)}<small> %</small>`:`—`,r:ring(tq?tc/tq:0,tq&&tc/tq*100>=TARGET?"var(--green)":"var(--seen)",tq?Math.round(tc/tq*100)+"%":"—"),s:tq?`${tq}問を記録`:"演習を記録すると表示",c:""}
+    ].map(k=>`<div class="card"><div class="kpi"><div class="l">${k.l}</div><div class="row"><div class="v">${k.v}</div>${k.r}</div><span class="s ${k.c}">${k.s}</span></div></div>`).join("");
+
+    renderChart(items);
+
+    // tasks
+    $("weekRange").textContent=`${fmt(cw)}〜${fmt(cwEnd)}`;
+    let tasks=items.filter(l=>isLate(l)||(due(l)&&due(l)>=cw&&due(l)<=cwEnd));
+    let fallback=false;
+    if(!tasks.length){tasks=items.filter(l=>st(l.id)===0).slice(0,3);fallback=true;}
+    $("tasks").innerHTML=(fallback?`<p class="empty" style="padding-top:0">今週の予定はありません。先の講義：</p>`:"")+tasks.slice(0,6).map(l=>{
+      const sub=isLate(l)?`<small class="late">予定 ${fmtW(due(l))} を過ぎています</small>`:`<small>${due(l)?"目安 "+fmtW(due(l)):"予定日なし"}${!isAvail(l)?"・"+(state.format==="dvd"?"DVD発送 ":"配信 ")+fmt(availDate(l))+"〜":""}</small>`;
+      return `<div class="task"><span class="ic" style="--sc:${SCOL[l.subj]}">${SHORT[l.subj]}</span><div class="tx">${l.title}${sub}</div><button class="tick" data-cycle="${l.id}" data-st="${st(l.id)}" aria-label="${l.title}の状態を切り替え">${checkSvg}</button></div>`;
+    }).join("")+(tasks.length?`<p class="note">丸をタップ：未着手 → 視聴済み → 復習済み</p>`:"");
+
+    // subject bars
+    const order=Object.keys(SUBJ).filter(k=>items.some(l=>l.subj===k));
+    $("sbars").innerHTML=order.map(k=>{
+      const ls=items.filter(l=>l.subj===k);
+      const d=ls.filter(l=>st(l.id)===2).length,s=ls.filter(l=>st(l.id)>=1).length;
+      return `<div class="sbar"><div class="n"><i style="background:${SCOL[k]}"></i><span>${SUBJ[k]}</span></div><div class="p">${s}/${ls.length}</div><div class="bar"><i class="d" style="width:${d/ls.length*100}%"></i><i class="s" style="width:${(s-d)/ls.length*100}%"></i></div></div>`;
+    }).join("");
+
+    renderCal(items);
+
+    // milestones
+    const ms=MILES[state.format].map(([d,t])=>({d,t})).concat(state.examDate?[{d:state.examDate,t:"本試験",exam:true}]:[]).filter(m=>m.d>=TODAY).sort((a,b)=>a.d<b.d?-1:1).slice(0,5);
+    $("miles").innerHTML=ms.length?ms.map(m=>{const n=Math.ceil((D(m.d)-today)/864e5);return `<div class="m${m.exam?" exam":""}"><div class="dt"><b>${D(m.d).getDate()}</b><small>${D(m.d).getMonth()+1}月</small></div><div class="tx">${m.t}<small>${n===0?"今日":"あと"+n+"日"}・${wk[D(m.d).getDay()]}曜日</small></div></div>`;}).join(""):`<p class="empty">予定はありません。</p>`;
+
+    // weak
+    const rec=TOPICS.map(([k,lo,hi])=>({k,lo,hi,w:(lo+hi)/2,...statsFor(k)})).filter(s=>s.q>0).map(s=>({...s,score:s.w*(1-s.acc/100)})).sort((a,b)=>b.score-a.score).filter(s=>s.acc<90).slice(0,3);
+    $("weak").innerHTML=rec.length?rec.map((s,i)=>`<div class="w"><span class="rk">${i+1}</span><div class="nm">${TNAME[s.k]}<small>出題 ${s.lo}〜${s.hi}%</small></div><span class="pc" style="color:${accColor(s.acc)}">${Math.round(s.acc)}%</span></div>`).join("")
+      :`<p class="empty">演習の結果を記録すると、出題比率と正答率から復習の優先順位を出します。</p><button class="link" data-goto="analysis">演習を記録する</button>`;
+  }
+
+  function renderChart(items){
+    const total=items.length;
+    const starts=items.map(availDate).sort()[0];
+    const lastDue=items.map(due).filter(Boolean).sort().pop()||state.target;
+    let w0=weekStart([starts,TODAY].sort()[0]), w1=weekStart([lastDue,TODAY].sort().pop());
+    const weeks=[];for(let w=w0;w<=w1;w=addDays(w,7))weeks.push(w);
+    const cw=weekStart(TODAY);
+    const pl=weeks.map(w=>items.filter(l=>due(l)&&due(l)<=addDays(w,6)).length);
+    const se=weeks.map(w=>w<=cw?items.filter(l=>{const s=seenAt(l);return s&&s<=addDays(w,6);}).length:null);
+    const dn=weeks.map(w=>w<=cw?items.filter(l=>{const s=doneAt(l);return s&&s<=addDays(w,6);}).length:null);
+    const W=Math.max(300,Math.min(760,$("cumChart").clientWidth||640)),H=W<480?200:230,pl_=30,pr=12,pt=16,pb=24;
+    const x=i=>pl_+(weeks.length<2?0:i*(W-pl_-pr)/(weeks.length-1));
+    const y=v=>pt+(1-v/total)*(H-pt-pb);
+    let g="";
+    [0,.25,.5,.75,1].forEach(f=>{const v=Math.round(total*f);g+=`<line x1="${pl_}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text class="ax" x="${pl_-6}" y="${y(v)+3}" text-anchor="end">${v}</text>`;});
+    let lastM="",lastX=-99;
+    weeks.forEach((w,i)=>{const m=w.slice(0,7);if(m!==lastM){lastM=m;if(x(i)-lastX<30)return;lastX=x(i);g+=`<text class="ax" x="${x(i)}" y="${H-8}" text-anchor="middle">${+w.slice(5,7)}月</text>`;}});
+    const path=a=>a.map((v,i)=>v===null?null:`${x(i)},${y(v)}`).filter(Boolean).join(" ");
+    const seP=path(se);
+    const lastI=se.map((v,i)=>v===null?-1:i).filter(i=>i>=0).pop();
+    let area="";
+    if(seP&&lastI>=0) area=`<polygon points="${x(0)},${y(0)} ${seP} ${x(lastI)},${y(0)}" fill="var(--green)" opacity=".12"/>`;
+    const ti=weeks.indexOf(cw);
+    const todayLine=ti>=0?`<line x1="${x(ti)}" x2="${x(ti)}" y1="${pt}" y2="${H-pb}" stroke="var(--late)" stroke-dasharray="3 4"/><text class="ax" x="${x(ti)}" y="${pt-3}" text-anchor="middle" style="fill:var(--late);font-weight:800">今週</text>`:"";
+    $("cumChart").innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="予定と実績の累積講義数">${g}${area}${todayLine}
+      <polyline points="${path(pl)}" fill="none" stroke="var(--sub)" stroke-width="2" stroke-dasharray="5 5"/>
+      <polyline points="${path(dn)}" fill="none" stroke="var(--seen)" stroke-width="2.5" stroke-linejoin="round"/>
+      <polyline points="${seP}" fill="none" stroke="var(--green)" stroke-width="3" stroke-linejoin="round"/>
+      ${lastI>=0?`<circle cx="${x(lastI)}" cy="${y(se[lastI])}" r="5" fill="var(--green)" stroke="var(--card)" stroke-width="2"/>`:""}</svg>`;
+    $("chartSub").textContent=`週ごと・全${total}講義`;
+  }
+
+  function renderCal(items){
+    if(!calMonth) calMonth=TODAY.slice(0,7);
+    const [y,m]=calMonth.split("-").map(Number);
+    $("calTitle").textContent=`${y}年 ${m}月`;
+    const first=new Date(y,m-1,1);
+    const start=new Date(first);start.setDate(1-((first.getDay()+6)%7));
+    const dues={};items.forEach(l=>{if(due(l))(dues[due(l)]=dues[due(l)]||[]).push(l);});
+    const evs={};MILES[state.format].forEach(([d,t])=>(evs[d]=evs[d]||[]).push(t));if(state.examDate)(evs[state.examDate]=evs[state.examDate]||[]).push("🏁 本試験");
+    let h=["月","火","水","木","金","土","日"].map(w=>`<div class="w">${w}</div>`).join("");
+    for(let i=0;i<42;i++){
+      const d=new Date(start);d.setDate(start.getDate()+i);const s=S_(d);
+      const ls=dues[s]||[];
+      const late=ls.some(isLate), allDone=ls.length&&ls.every(l=>st(l.id)>=1);
+      const c=late?"var(--late)":allDone?"var(--green)":"var(--seen)";
+      const cls=[d.getMonth()!==m-1?"out":"",ls.length?"has":"",s===TODAY?"today":"",s===calSel?"sel":"",evs[s]?"ev":""].join(" ");
+      h+=`<button class="${cls}" data-day="${s}" style="--c:${c}" aria-label="${fmtW(s)}${ls.length?" 講義"+ls.length+"件":""}">${d.getDate()}</button>`;
+    }
+    $("cal").innerHTML=h;
+    const sel=calSel||TODAY;
+    const ls=dues[sel]||[], ev=evs[sel]||[];
+    $("calDay").innerHTML=`<b>${fmtW(sel)}</b>`+(ls.length||ev.length?ev.map(t=>`<div><i style="background:var(--green-d)"></i>${t}</div>`).join("")+ls.map(l=>`<div><i style="background:${SCOL[l.subj]}"></i>${l.title}${st(l.id)?`（${["","視聴済み","復習済み"][st(l.id)]}）`:""}</div>`).join(""):`<div style="color:var(--sub)">予定はありません</div>`);
+  }
+
+  // ---------- マトリクス ----------
+  const PAINTS=[["cycle","順番に切り替え","linear-gradient(135deg,var(--todo) 33%,var(--seen) 33% 66%,var(--green) 66%)"],["0","未着手にする","var(--todo)"],["1","視聴済みにする","var(--seen)"],["2","復習済みにする","var(--green)"]];
+  function renderMatrix(items){
+    const seen=items.filter(l=>st(l.id)>=1).length,done=items.filter(l=>st(l.id)===2).length;
+    const late=items.filter(isLate).length,locked=items.filter(l=>!isAvail(l)).length;
+    $("mxStats").innerHTML=`<div class="mini"><div class="v">${seen}<small> / ${items.length}</small></div><div class="l">視聴済み</div></div><div class="mini"><div class="v">${done}<small> / ${items.length}</small></div><div class="l">復習済み</div></div><div class="mini ${late?"late":""}"><div class="v">${late}</div><div class="l">予定を過ぎた未着手</div></div><div class="mini"><div class="v">${locked}</div><div class="l">${state.format==="dvd"?"DVD未発送":"未配信"}</div></div>`;
+    $("paint").innerHTML=PAINTS.map(([v,t,c])=>`<button data-paint="${v}" aria-pressed="${paint===v}"><i style="--c:${c}"></i>${t}</button>`).join("");
+    const order=Object.keys(SUBJ).filter(k=>items.some(l=>l.subj===k));
+    const maxN=Math.max(...order.map(k=>items.filter(l=>l.subj===k).length));
+    const narrow=window.innerWidth<=760;
+    let h=`<colgroup><col style="width:${narrow?92:220}px">${"<col>".repeat(maxN)}</colgroup><thead><tr><th class="rh">科目</th><th colspan="${maxN}" style="text-align:left;padding-left:4px">${narrow?"講義番号／目安日":"講義（数字はTACの講義番号、下は目安の日）"}</th></tr></thead><tbody>`;
+    order.forEach(k=>{
+      const ls=items.filter(l=>l.subj===k);
+      const d=ls.filter(l=>st(l.id)===2).length,s=ls.filter(l=>st(l.id)>=1).length;
+      h+=`<tr><td class="rh"><div class="nm"><i style="background:${SCOL[k]}"></i><span title="${SUBJ[k]}">${narrow?SHORT[k]:SUBJ[k]}</span></div><div class="mt"><div class="bar"><i class="d" style="width:${d/ls.length*100}%"></i><i class="s" style="width:${(s-d)/ls.length*100}%"></i></div><span>${s}/${ls.length}</span></div></td>`;
+      for(let i=0;i<maxN;i++){
+        const l=ls[i];
+        if(!l){h+=`<td class="na"></td>`;continue;}
+        const cls=["cell",isLate(l)?"late":"",!isAvail(l)?"lock":"",picked===l.id?"picked":""].join(" ");
+        h+=`<td><button class="${cls}" data-cell="${l.id}" data-st="${st(l.id)}" title="${l.title}${due(l)?"（目安 "+fmtW(due(l))+"）":""}" aria-label="${l.title} ${["未着手","視聴済み","復習済み"][st(l.id)]}"><b>${l.no}</b><small>${due(l)?fmt(due(l)):"—"}</small></button></td>`;
+      }
+      h+=`</tr>`;
+    });
+    h+=`</tbody>`;
+    $("mx").innerHTML=h;
+    const p=picked&&byId(picked);
+    $("mxDetail").innerHTML=p?`<div class="tx">${p.title}<small>${p.sec} ${p.no}${due(p)?"・目安 "+fmtW(due(p)):""}・${state.format==="dvd"?"DVD発送 ":"Web配信 "}${fmt(availDate(p))}〜${isLate(p)?"・予定を過ぎています":""}</small></div><div class="seg" role="group" aria-label="状態">${["未着手","視聴済み","復習済み"].map((n,v)=>`<button data-set="${p.id}" data-v="${v}" aria-pressed="${st(p.id)===v}">${n}</button>`).join("")}</div>`
+      :`<div class="tx" style="font-weight:500;color:var(--sub)">マスをタップすると記録され、ここに講義名と予定が表示されます。マスの数字は講義番号、下の日付は目安の日です。</div>`;
+  }
+
+  // ---------- 分析 ----------
+  function statsFor(k){
+    const ls=state.logs.filter(l=>l.topic===k).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:a.t-b.t);
+    const q=ls.reduce((s,l)=>s+l.q,0),c=ls.reduce((s,l)=>s+l.c,0);
+    let recent=null;
+    if(ls.length>=4){const r=ls.slice(-3),o=ls.slice(0,-3);recent=Math.round((r.reduce((s,l)=>s+l.c,0)/r.reduce((s,l)=>s+l.q,0)-o.reduce((s,l)=>s+l.c,0)/o.reduce((s,l)=>s+l.q,0))*100);}
+    return{ls,q,c,acc:q?c/q*100:null,recent};
+  }
+  function spark(ls){
+    if(ls.length<2)return `<svg viewBox="0 0 70 26"></svg>`;
+    const pts=ls.slice(-10).map((l,i,a)=>[4+i*(62/(a.length-1)),22-(l.c/l.q)*18]);
+    const ty=22-TARGET/100*18;
+    return `<svg viewBox="0 0 70 26" aria-hidden="true"><line x1="0" x2="70" y1="${ty}" y2="${ty}" stroke="var(--line)" stroke-dasharray="2 2"/><polyline fill="none" stroke="var(--green)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="${pts.map(p=>p.join(",")).join(" ")}"/><circle cx="${pts.at(-1)[0]}" cy="${pts.at(-1)[1]}" r="3" fill="var(--green-d)"/></svg>`;
+  }
+  const accColor=a=>a>=TARGET?"var(--done)":a>=TARGET-15?"var(--seen)":"var(--late)";
+  function renderAnalysis(){
+    const S=TOPICS.map(([k,lo,hi])=>({k,lo,hi,w:(lo+hi)/2,...statsFor(k)}));
+    const rec=S.filter(s=>s.q>0).map(s=>({...s,score:s.w*(1-s.acc/100)})).sort((a,b)=>b.score-a.score);
+    const top=rec.filter(s=>s.acc<90).slice(0,3);
+    const unrec=S.filter(s=>!s.q);
+    $("prio").innerHTML=`<div class="card weak"><div class="card-h"><h2>重点的に復習したい分野</h2><small>出題比率 × 失点率</small></div>`+
+      (state.logs.length?(top.length?top.map((s,i)=>`<div class="w"><span class="rk">${i+1}</span><div class="nm">${TNAME[s.k]}<small>出題 ${s.lo}〜${s.hi}%${s.recent!==null?`／直近 ${s.recent>0?"+":""}${s.recent}pt`:""}</small></div><span class="pc" style="color:${accColor(s.acc)}">${Math.round(s.acc)}%</span></div>`).join(""):`<p class="empty">記録のある分野はすべて正答率90%以上です。</p>`)+(unrec.length?`<p class="note">未記録：${unrec.map(s=>TNAME[s.k]).join("、")}</p>`:"")
+      :`<p class="empty">まだ記録がありません。結果を記録すると、ここに優先順位が出ます。</p>`)+`</div>`;
+    let r=`<div class="card"><div class="card-h"><h2>分野別の正答率</h2><small>点線＝目標${TARGET}%</small></div>`;
+    r+=S.map(s=>{const a=s.acc;return `<button class="acc" data-topic="${s.k}" aria-pressed="${state.topicFilter===s.k}"><span class="n">${TNAME[s.k]}<small>出題 ${s.lo}〜${s.hi}%</small></span><span class="track">${a!==null?`<i style="width:${a}%;background:${accColor(a)}"></i>`:""}<span class="tgt" style="left:${TARGET}%"></span></span><span class="v">${a!==null?Math.round(a)+"%":"—"}<small>${s.q?`${s.c}/${s.q}問`:"未記録"}</small></span>${spark(s.ls)}</button>`;}).join("");
+    r+=`<p class="note">分野をタップすると、下の記録をその分野だけに絞り込みます。</p></div>`;
+    const logs=state.logs.filter(l=>!state.topicFilter||l.topic===state.topicFilter).sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:b.t-a.t);
+    r+=`<div class="card"><div class="card-h"><h2>記録</h2><small>${state.topicFilter?TNAME[state.topicFilter]+"のみ　<button class='link' id='clearTopic'>すべて表示</button>":"新しい順"}</small></div><div class="log">`;
+    r+=logs.length?logs.slice(0,60).map(l=>`<div class="it${String(l.t)===String(editingT)?" editing":""}"><span class="d">${fmt(l.date)}</span><span>${TNAME[l.topic]}<span class="mm">${esc(l.src)}${l.memo?"　"+esc(l.memo):""}</span></span><span class="r" style="color:${accColor(l.c/l.q*100)}">${l.c}/${l.q}<span class="mm">${Math.round(l.c/l.q*100)}%</span></span><span class="acts"><button class="edit" data-edit="${l.t}">編集</button><button class="del" data-del="${l.t}">削除</button></span></div>`).join(""):`<p class="empty">記録はありません。</p>`;
+    r+=`</div></div>`;
+    $("anRight").innerHTML=r;
+    const ct=$("clearTopic");if(ct)ct.onclick=()=>{state.topicFilter="";save();render();};
+  }
+
+  function renderSettings(items){
+    $("sFormat").value=state.format;$("sPace").value=state.pace;$("sTarget").value=state.target;
+    $("sExam").value=state.examDate||"";
+    $("sTargetWrap").style.display=state.pace==="plan"?"":"none";
+    $("introToggle").checked=state.includeIntro;
+    const weeks=Math.max(1,(D(state.target)-D(items.map(availDate).sort()[0]))/(7*864e5));
+    $("planHint").textContent=state.pace==="plan"
+      ?`目標日までに全${items.length}講義を均等に割り振ると、週あたり約${(items.length/weeks).toFixed(1)}講義（1講義は約2時間半）。配信前の講義は利用開始日以降に置いています。`
+      :`日曜の教室講座（13:00〜／16:30〜）と同じペースを目安にします。演習とPSMは予定日なしになります。`;
+  }
+
+  // ---------- 演習フォーム ----------
+  let editingT=null,armedDel=null,armedTimer=null;
+  $("fDate").value=TODAY;
+  $("fTopic").innerHTML=TOPICS.map(([k])=>`<option value="${k}">${TNAME[k]}</option>`).join("");
+  $("fAdd").onclick=()=>{
+    const q=parseInt($("fQ").value,10),c=parseInt($("fC").value,10),date=$("fDate").value,msg=$("fMsg");
+    if(!date){msg.textContent="日付を入力してください。";return;}
+    if(!(q>0)){msg.textContent="問題数を1以上で入力してください。";return;}
+    if(!(c>=0)||c>q){msg.textContent="正解数は0以上、問題数以下で入力してください。";return;}
+    msg.textContent="";
+    const rec={date,topic:$("fTopic").value,src:$("fSrc").value,q,c,memo:$("fMemo").value.trim().slice(0,120)};
+    if(editingT!==null){const i=state.logs.findIndex(l=>String(l.t)===String(editingT));if(i>=0){const nl=state.logs.slice();nl[i]=Object.assign({},nl[i],rec);state.logs=nl;}}
+    else state.logs=state.logs.concat([Object.assign({t:Date.now()},rec)]);
+    endEdit();save();render();
+  };
+  $("fCancel").onclick=()=>{endEdit();render();};
+  function startEdit(t){
+    const l=state.logs.find(x=>String(x.t)===String(t));if(!l)return;
+    editingT=l.t;
+    $("fDate").value=l.date;$("fTopic").value=l.topic;
+    const src=$("fSrc");if(![...src.options].some(o=>o.value===l.src))src.add(new Option(l.src,l.src));src.value=l.src;
+    $("fQ").value=l.q;$("fC").value=l.c;$("fMemo").value=l.memo||"";
+    $("fAdd").textContent="更新する";$("fCancel").hidden=false;$("editBar").classList.add("on");$("fMsg").textContent="";
+    $("editBar").scrollIntoView({behavior:"smooth",block:"center"});
+  }
+  function endEdit(){
+    editingT=null;$("fQ").value="";$("fC").value="";$("fMemo").value="";
+    $("fAdd").textContent="記録する";$("fCancel").hidden=true;$("editBar").classList.remove("on");
+  }
+
+  // ---------- 操作 ----------
+  function setStatus(id,v){
+    state.status=Object.assign({},state.status,{[id]:v});
+    const w=Object.assign({},state.when[id]||{});
+    if(v===0){delete w.s;delete w.r;}
+    else{if(!w.s)w.s=TODAY;if(v===2){if(!w.r)w.r=TODAY;}else delete w.r;}
+    state.when=Object.assign({},state.when,{[id]:w});
+    save();render();
+  }
+  function go(p){
+    page=p;
+    ["dash","matrix","analysis","settings"].forEach(k=>$("page-"+k).hidden=k!==p);
+    document.querySelectorAll(".menu button").forEach(b=>{if(b.dataset.page===p)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");});
+    $("topTitle").textContent=document.querySelector(`.menu button[data-page="${p}"]`).textContent.trim();
+    $("app").classList.remove("open");
+    window.scrollTo({top:0});
+    if(p==="dash")renderChart(active());
+  }
+  document.addEventListener("click",e=>{
+    const t=e.target;
+    let b;
+    if(b=t.closest(".menu button")){go(b.dataset.page);return;}
+    if(b=t.closest("[data-goto]")){go(b.dataset.goto);return;}
+    if(b=t.closest("[data-quick]")){setStatus(b.dataset.quick,1);return;}
+    if(b=t.closest("[data-cycle]")){const id=b.dataset.cycle;setStatus(id,(st(id)+1)%3);return;}
+    if(b=t.closest("[data-cell]")){const id=b.dataset.cell;picked=id;setStatus(id,paint==="cycle"?(st(id)+1)%3:+paint);return;}
+    if(b=t.closest("[data-set]")){setStatus(b.dataset.set,+b.dataset.v);return;}
+    if(b=t.closest("[data-paint]")){paint=b.dataset.paint;render();return;}
+    if(b=t.closest("[data-day]")){calSel=b.dataset.day;renderCal(active());return;}
+    if(b=t.closest(".acc")){state.topicFilter=state.topicFilter===b.dataset.topic?"":b.dataset.topic;save();render();return;}
+    if(b=t.closest(".del")){
+      const id=b.dataset.del;
+      if(armedDel===id){clearTimeout(armedTimer);armedDel=null;if(String(editingT)===id)endEdit();state.logs=state.logs.filter(l=>String(l.t)!==id);save();render();}
+      else{document.querySelectorAll(".del.armed").forEach(x=>{x.classList.remove("armed");x.textContent="削除";});armedDel=id;b.classList.add("armed");b.textContent="本当に削除";clearTimeout(armedTimer);armedTimer=setTimeout(()=>{armedDel=null;b.classList.remove("armed");b.textContent="削除";},4000);}
+      return;
+    }
+    if(b=t.closest(".edit")){startEdit(b.dataset.edit);render();return;}
+  });
+  let rz;window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(page==="dash")renderChart(active());if(page==="matrix")renderMatrix(active());},150);});
+  $("examChip").onclick=()=>{go("settings");setTimeout(()=>$("sExam").focus(),50);};
+  $("menuBtn").onclick=()=>$("app").classList.add("open");
+  $("scrim").onclick=()=>$("app").classList.remove("open");
+  $("calPrev").onclick=()=>{const[y,m]=calMonth.split("-").map(Number);const d=new Date(y,m-2,1);calMonth=S_(d).slice(0,7);renderCal(active());};
+  $("calNext").onclick=()=>{const[y,m]=calMonth.split("-").map(Number);const d=new Date(y,m,1);calMonth=S_(d).slice(0,7);renderCal(active());};
+  $("sFormat").onchange=e=>{state.format=e.target.value;save();render();};
+  $("sPace").onchange=e=>{state.pace=e.target.value;save();render();};
+  $("sTarget").onchange=e=>{if(e.target.value){state.target=e.target.value;save();render();}};
+  $("sExam").onchange=e=>{state.examDate=e.target.value;save();render();};
+  $("introToggle").onchange=e=>{state.includeIntro=e.target.checked;save();render();};
+  let resetArmed=false,resetTimer=null;
+  $("reset").onclick=e=>{
+    const b=e.currentTarget;
+    if(resetArmed){clearTimeout(resetTimer);resetArmed=false;b.textContent="講義の視聴記録をリセット";state.status={};state.when={};save();render();return;}
+    resetArmed=true;b.textContent="もう一度押すとリセットします（演習記録は残ります）";
+    resetTimer=setTimeout(()=>{resetArmed=false;b.textContent="講義の視聴記録をリセット";},4000);
+  };
+
+  // ---------- 同期（Google スプレッドシート） ----------
+  const CFG_KEY="cfa-sync-config", DIRTY_KEY="cfa-sync-dirty";
+  const saveEl=$("saveState");
+  let cfg=null;try{cfg=JSON.parse(localStorage.getItem(CFG_KEY)||"null");}catch(e){}
+  let dirty=false;try{dirty=localStorage.getItem(DIRTY_KEY)==="1";}catch(e){}
+  let syncing=false;
+  const ERR={wrong_passphrase:"合言葉が違います。",passphrase_not_set:"Code.gs の合言葉が初期値のままです。書き換えて、もう一度デプロイしてください。"};
+  const hhmm=()=>{const d=new Date();return pad(d.getHours())+":"+pad(d.getMinutes());};
+  function setDirty(v){dirty=v;try{localStorage.setItem(DIRTY_KEY,v?"1":"0");}catch(e){}}
+
+  // スマホ用の設定リンク（#sync=...）で開かれたら取り込む
+  (function(){
+    const m=location.hash.match(/^#sync=(.+)$/);
+    if(!m)return;
+    try{const c=JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1])))));if(c.url&&c.token){cfg=c;localStorage.setItem(CFG_KEY,JSON.stringify(c));}}catch(e){}
+    history.replaceState(null,"",location.pathname+location.search);
+  })();
+
+  async function api(action,data){
+    const res=await fetch(cfg.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({token:cfg.token,action,data})});
+    const j=await res.json();
+    if(!j.ok)throw new Error(ERR[j.error]||j.error||"不明なエラー");
+    return j;
+  }
+  function toPayload(){
+    const settings={format:state.format,pace:state.pace,target:state.target,examDate:state.examDate||"",includeIntro:state.includeIntro?"true":"false"};
+    const lectures=L.map(l=>({id:l.id,sec:l.sec,no:l.no,title:l.title,status:st(l.id),s:(state.when[l.id]||{}).s||"",r:(state.when[l.id]||{}).r||""}));
+    const logs=state.logs.map(g=>Object.assign({},g,{topicName:TNAME[g.topic]||g.topic}));
+    return{settings,lectures,logs};
+  }
+  function fromPayload(d){
+    const s=d.settings||{};
+    const next=JSON.parse(JSON.stringify(state));
+    if(s.format)next.format=s.format;
+    if(s.pace)next.pace=s.pace;
+    if(s.target)next.target=s.target;
+    if("examDate" in s)next.examDate=s.examDate;
+    if("includeIntro" in s)next.includeIntro=s.includeIntro!=="false";
+    next.status={};next.when={};
+    (d.lectures||[]).forEach(l=>{if(l.status>0)next.status[l.id]=l.status;const w={};if(l.s)w.s=l.s;if(l.r)w.r=l.r;if(w.s||w.r)next.when[l.id]=w;});
+    next.logs=(d.logs||[]).map(g=>({t:g.t,date:g.date,topic:g.topic,src:g.src,q:g.q,c:g.c,memo:g.memo}));
+    return next;
+  }
+  const remoteEmpty=d=>!(d.logs||[]).length&&!(d.lectures||[]).some(l=>l.status>0)&&!Object.keys(d.settings||{}).length;
+  const localHasData=()=>Object.keys(state.status).length||state.logs.length;
+
+  function showStatus(t){saveEl.textContent=t;const m=$("cMsg");if(m)m.textContent=cfg?t:"未設定（この端末の中だけに保存しています）";}
+  async function push(){
+    if(!cfg||syncing)return;
+    syncing=true;showStatus("保存中…");
+    try{await api("save",toPayload());setDirty(false);showStatus("スプレッドシートに保存済み（"+hhmm()+"）");}
+    catch(e){showStatus("送信できませんでした："+e.message+"（この端末には保存済み。次の操作で再送します）");}
+    finally{syncing=false;}
+  }
+  async function pull(){
+    if(!cfg||syncing)return;
+    if(dirty){await push();return;}
+    syncing=true;showStatus("読み込み中…");
+    try{
+      const j=await api("load");
+      syncing=false;
+      if(remoteEmpty(j.data)){ if(localHasData()){await push();return;} showStatus("スプレッドシートと接続済み"); }
+      else{state=fromPayload(j.data);persistLocal();render();showStatus("スプレッドシートと同期済み（"+hhmm()+"）");}
+    }catch(e){syncing=false;showStatus("読み込めませんでした："+e.message);}
+  }
+  function persistLocal(){try{localStorage.setItem(LS_KEY,JSON.stringify(state));}catch(e){}}
+  function save(){
+    persistLocal();
+    if(!cfg){showStatus("この端末の中だけに保存しています");return;}
+    setDirty(true);showStatus("保存待ち…");
+    clearTimeout(saveTimer);saveTimer=setTimeout(push,800);
+  }
+  function merge(obj){
+    if(!obj)return;
+    let copy;try{copy=JSON.parse(JSON.stringify(obj));}catch(e){return;}
+    state=Object.assign(JSON.parse(JSON.stringify(DEFAULT)),copy);
+    if(typeof state.status!=="object"||!state.status||Array.isArray(state.status))state.status={};
+    if(typeof state.when!=="object"||!state.when||Array.isArray(state.when))state.when={};
+    state.logs=Array.isArray(state.logs)?state.logs:[];
+  }
+
+  // 同期設定フォーム
+  function renderSync(){
+    $("syncBanner").hidden=!!cfg;
+    $("cUrl").value=cfg?cfg.url:"";$("cToken").value=cfg?cfg.token:"";
+    $("cOff").hidden=!cfg;$("cLink").hidden=!cfg;
+  }
+  $("cSave").onclick=async()=>{
+    const url=$("cUrl").value.trim(),token=$("cToken").value;
+    if(!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(url)){$("cMsg").textContent="URLは https://script.google.com/macros/s/…/exec の形です。デプロイ画面の「ウェブアプリ」のURLをコピーしてください。";return;}
+    if(!token){$("cMsg").textContent="合言葉を入力してください。";return;}
+    const prev=cfg;cfg={url,token};
+    $("cMsg").textContent="接続を確認しています…";
+    try{await api("ping");localStorage.setItem(CFG_KEY,JSON.stringify(cfg));renderSync();await pull();}
+    catch(e){cfg=prev;$("cMsg").textContent="接続できませんでした："+e.message;}
+  };
+  $("cOff").onclick=()=>{cfg=null;try{localStorage.removeItem(CFG_KEY);}catch(e){}renderSync();showStatus("この端末の中だけに保存しています");};
+  $("cLink").onclick=async()=>{
+    const code=encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(cfg)))));
+    const link=location.origin+location.pathname+"#sync="+code;
+    const out=$("cLinkOut");out.value=link;out.hidden=false;out.focus();out.select();
+    try{await navigator.clipboard.writeText(link);$("cMsg").textContent="設定リンクをコピーしました。自分宛てにメールやLINEで送り、スマホで開くと同期の設定が済みます（合言葉を含むので他の人には送らないでください）。";}
+    catch(e){$("cMsg").textContent="枠の中のリンクをコピーして、スマホで開いてください。";}
+  };
+
+  // 読み込み・書き出し
+  $("exBtn").onclick=async()=>{
+    const t=$("ioText"),m=$("ioMsg");t.value=JSON.stringify({app:"cfa-l1",v:1,state});m.hidden=false;t.focus();t.select();
+    try{await navigator.clipboard.writeText(t.value);m.textContent="書き出してコピーしました。";}catch(e){m.textContent="枠の中の文字をすべて選択してコピーしてください。";}
+  };
+  $("imBtn").onclick=()=>{
+    const m=$("ioMsg");m.hidden=false;
+    let obj;try{obj=JSON.parse($("ioText").value.trim());}catch(e){m.textContent="読み込めませんでした。書き出した文字を最初から最後まで全部貼り付けてください。";return;}
+    const s=obj&&obj.state?obj.state:obj;
+    if(!s||typeof s!=="object"||!("status" in s)){m.textContent="このアプリのデータではないようです。";return;}
+    merge(s);persistLocal();render();save();
+    m.textContent=`読み込みました（視聴記録 ${Object.keys(state.status).length}件・演習記録 ${state.logs.length}件）。`;
+    $("ioText").value="";
+  };
+
+  // 起動
+  try{const raw=localStorage.getItem(LS_KEY);if(raw)merge(JSON.parse(raw));}catch(e){}
+  render();renderSync();
+  showStatus(cfg?"接続中…":"この端末の中だけに保存しています");
+  pull();
+  // 別の端末での変更を、画面に戻ったときに取り込む
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")pull();});
+  window.addEventListener("online",()=>{if(dirty)push();});
+})();
+</script>
+</body></html>
