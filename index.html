@@ -190,25 +190,29 @@ main{min-width:0;padding:26px 28px 40px}
 .mx-leg i{width:12px;height:12px;border-radius:4px;background:var(--c)}
 .mx-leg i.lk{background:transparent;border:1.5px dashed var(--sub)}
 .mx-leg i.lt{background:var(--card);box-shadow:inset 0 0 0 2px var(--late)}
-.mx-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:14px;
-  background:linear-gradient(90deg,var(--card) 30%,transparent) left/40px 100% no-repeat local,linear-gradient(270deg,var(--card) 30%,transparent) right/40px 100% no-repeat local,
-  radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.14),transparent) right/12px 100% no-repeat scroll;background-color:var(--card)}
-.mx{border-collapse:separate;border-spacing:0;min-width:560px;width:100%;table-layout:fixed}
-.mx th,.mx td{padding:6px 4px}
-.mx thead th{background:var(--bg);font-size:11px;color:var(--sub);font-weight:800;text-align:center;border-bottom:2px solid var(--line);white-space:nowrap}
-.mx tbody td{border-bottom:1px solid var(--line);background:var(--card)}
-.mx tbody tr:last-child td{border-bottom:none}
-.mx tbody tr:nth-child(even) td{background:var(--zebra)}
-.mx td+td,.mx th+th{border-left:1px dashed var(--line)}
-.mx th.rh,.mx td.rh{position:sticky;left:0;z-index:2;text-align:left;border-right:2px solid var(--line);box-shadow:6px 0 8px -6px rgba(0,0,0,.18)}
-.mx thead th.rh{background:var(--bg);z-index:3}
-.mx td.rh{padding:8px 10px 8px 12px;border-left:4px solid var(--sc)}
+.mx2{display:flex;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)}
+.mxL{flex:none;width:230px;border-right:2px solid var(--line);box-shadow:6px 0 8px -6px rgba(0,0,0,.18);position:relative;z-index:2;background:var(--card)}
+.mxR{flex:1;min-width:0;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-x:none;
+  background:linear-gradient(270deg,var(--card) 30%,transparent) right/40px 100% no-repeat local,radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.14),transparent) right/12px 100% no-repeat scroll;background-color:var(--card)}
+.mxG{display:grid;grid-auto-rows:var(--rowh)}
+.mx2{--headh:38px;--rowh:66px}
+.mxL .hd,.mxG .hd{height:var(--headh);display:flex;align-items:center;background:var(--bg);font-size:11px;color:var(--sub);font-weight:800;border-bottom:2px solid var(--line);white-space:nowrap}
+.mxL .hd{padding:0 12px}
+.mxG .hd{justify-content:center}
+.mxG{grid-template-rows:var(--headh)}
+.mr{height:var(--rowh);border-bottom:1px solid var(--line);background:var(--card)}
+.mr.z{background:var(--zebra)}
+.mr.last{border-bottom:none}
+.mxL .mr{padding:8px 10px 8px 12px;border-left:4px solid var(--sc);display:flex;flex-direction:column;justify-content:center}
+.mxG .mr{padding:6px 4px;display:flex;align-items:center}
+.mxG .mr.c1,.mxG .hd.c1{border-left:none}
+.mxG .mr,.mxG .hd{border-left:1px dashed var(--line)}
 .rh .nm span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rh .nm{font-size:13px;font-weight:800;display:flex;align-items:center;gap:8px;min-width:0}
 .rh .mt{display:flex;align-items:center;gap:8px;margin-top:4px}
 .rh .mt .bar{flex:1;height:5px}
 .rh .mt span{font-family:var(--num);font-size:11px;color:var(--sub);font-weight:700;white-space:nowrap}
-.cell{width:100%;height:52px;border:none;border-radius:10px;background:var(--todo);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:transform .12s,background .2s;color:var(--ink);padding:2px}
+.cell{width:100%;height:100%;border:none;border-radius:10px;background:var(--todo);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:transform .12s,background .2s;color:var(--ink);padding:2px}
 .cell:hover{transform:scale(1.04)}
 .cell b{font-family:var(--num);font-size:13px;font-weight:800;line-height:1.1}
 .cell small{font-size:10px;font-weight:700;opacity:.75;line-height:1.1}
@@ -216,8 +220,8 @@ main{min-width:0;padding:26px 28px 40px}
 .cell[data-st="2"]{background:var(--green);color:#fff}
 .cell.late[data-st="0"]{background:var(--card);box-shadow:inset 0 0 0 2px var(--late);color:var(--late)}
 .cell.lock[data-st="0"]{background:transparent;border:1.5px dashed color-mix(in srgb,var(--sub) 55%,transparent);color:var(--sub)}
-.cell.picked{outline:3px solid var(--blue);outline-offset:1px}
-@media (max-width:760px){.mx{min-width:420px}.mx th,.mx td{padding:5px 3px}.mx td.rh{padding:6px 6px 6px 8px}.rh .nm{font-size:12px}.cell{height:48px}.cell b{font-size:12px}}
+.cell.picked{outline:3px solid var(--blue);outline-offset:-1px}
+@media (max-width:760px){.mx2{--rowh:60px;--headh:34px}.mxL{width:96px}.mxL .mr{padding:6px 6px 6px 8px}.mxL .hd{padding:0 8px}.rh .nm{font-size:12px}.cell b{font-size:12px}.mxG .mr{padding:5px 3px}}
 .mx-sum td{padding-top:6px}
 .mx-detail{margin-top:14px;background:var(--bg);border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;min-height:62px}
 .mx-detail .tx{flex:1;min-width:200px;font-size:14px;font-weight:800;line-height:1.4}
@@ -236,10 +240,16 @@ main{min-width:0;padding:26px 28px 40px}
 
 /* ---------- analysis ---------- */
 .an{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:16px;align-items:start}
-.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.form label,.set label{min-width:0}
 .form label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--sub);font-weight:700}
 .form .full{grid-column:1/-1}
-input,select,textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1.5px solid transparent;border-radius:12px;padding:10px 12px;min-width:0;width:100%}
+input[type="date"]{-webkit-appearance:none;appearance:none;display:block;text-align:left;line-height:1.2}
+input[type="date"]::-webkit-date-and-time-value{text-align:left;margin:0}
+input[type="date"]::-webkit-calendar-picker-indicator{opacity:.6}
+input:not([type="checkbox"]),select{height:48px}
+textarea{height:auto}
+input,select,textarea{max-width:100%;box-sizing:border-box;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1.5px solid transparent;border-radius:12px;padding:10px 12px;min-width:0;width:100%}
 input:focus,select:focus{border-color:var(--green);outline:none}
 .btns{grid-column:1/-1;display:flex;gap:8px}
 .btn{flex:1;border:none;background:var(--green);color:#fff;border-radius:999px;padding:12px 16px;font-weight:800;cursor:pointer;font-size:15px}
@@ -384,7 +394,7 @@ input:focus,select:focus{border-color:var(--green);outline:none}
               <span><i style="--c:var(--todo)"></i>未着手</span><span><i style="--c:var(--seen)"></i>視聴済み</span><span><i style="--c:var(--green)"></i>復習済み</span><span><i class="lt"></i>予定超過</span><span><i class="lk"></i>配信前</span>
             </div>
           </div>
-          <div class="mx-wrap"><table class="mx" id="mx"></table></div>
+          <div class="mx2" id="mx"></div>
           <div class="mx-detail" id="mxDetail"></div>
         </div>
       </section>
@@ -686,21 +696,23 @@ input:focus,select:focus{border-color:var(--green);outline:none}
     const order=Object.keys(SUBJ).filter(k=>items.some(l=>l.subj===k));
     const maxN=Math.max(...order.map(k=>items.filter(l=>l.subj===k).length));
     const narrow=window.innerWidth<=760;
-    let h=`<colgroup><col style="width:${narrow?96:230}px">${"<col>".repeat(maxN)}</colgroup><thead><tr><th class="rh">科目</th>${Array.from({length:maxN},(_,i)=>`<th>${i+1}回目</th>`).join("")}</tr></thead><tbody>`;
-    order.forEach(k=>{
+    // 左：科目（固定）／右：講義のマス（横スクロール）
+    let left=`<div class="hd">科目</div>`, right=`${Array.from({length:maxN},(_,i)=>`<div class="hd${i===0?" c1":""}">${i+1}回目</div>`).join("")}`;
+    order.forEach((k,r)=>{
       const ls=items.filter(l=>l.subj===k);
       const d=ls.filter(l=>st(l.id)===2).length,s=ls.filter(l=>st(l.id)>=1).length;
-      h+=`<tr><td class="rh" style="--sc:${SCOL[k]}"><div class="nm"><span title="${SUBJ[k]}">${narrow?SHORT[k]:SUBJ[k]}</span></div><div class="mt"><div class="bar"><i class="d" style="width:${d/ls.length*100}%"></i><i class="s" style="width:${(s-d)/ls.length*100}%"></i></div><span>${s}/${ls.length}</span></div></td>`;
+      const rc=`mr${r%2?" z":""}${r===order.length-1?" last":""}`;
+      left+=`<div class="${rc} rh" style="--sc:${SCOL[k]}"><div class="nm"><span title="${SUBJ[k]}">${narrow?SHORT[k]:SUBJ[k]}</span></div><div class="mt"><div class="bar"><i class="d" style="width:${d/ls.length*100}%"></i><i class="s" style="width:${(s-d)/ls.length*100}%"></i></div><span>${s}/${ls.length}</span></div></div>`;
       for(let i=0;i<maxN;i++){
         const l=ls[i];
-        if(!l){h+=`<td class="na"></td>`;continue;}
+        if(!l){right+=`<div class="${rc}${i===0?" c1":""}"></div>`;continue;}
         const cls=["cell",isLate(l)?"late":"",!isAvail(l)?"lock":"",picked===l.id?"picked":""].join(" ");
-        h+=`<td><button class="${cls}" data-cell="${l.id}" data-st="${st(l.id)}" title="${l.title}${due(l)?"（目安 "+fmtW(due(l))+"）":""}" aria-label="${l.title} ${["未着手","視聴済み","復習済み"][st(l.id)]}"><b>${due(l)?fmt(due(l)):"—"}</b><small>No.${l.no}</small></button></td>`;
+        right+=`<div class="${rc}${i===0?" c1":""}"><button class="${cls}" data-cell="${l.id}" data-st="${st(l.id)}" title="${l.title}${due(l)?"（目安 "+fmtW(due(l))+"）":""}" aria-label="${l.title} ${["未着手","視聴済み","復習済み"][st(l.id)]}"><b>${due(l)?fmt(due(l)):"—"}</b><small>No.${l.no}</small></button></div>`;
       }
-      h+=`</tr>`;
     });
-    h+=`</tbody>`;
-    $("mx").innerHTML=h;
+    const keepScroll=$("mx").querySelector(".mxR");const sx=keepScroll?keepScroll.scrollLeft:0;
+    $("mx").innerHTML=`<div class="mxL">${left}</div><div class="mxR"><div class="mxG" style="grid-template-columns:repeat(${maxN},minmax(${narrow?62:96}px,1fr));min-width:${maxN*(narrow?62:96)}px">${right}</div></div>`;
+    $("mx").querySelector(".mxR").scrollLeft=sx;
     const p=picked&&byId(picked);
     $("mxDetail").innerHTML=p?`<div class="tx">${p.title}<small>${p.sec} ${p.no}${due(p)?"・目安 "+fmtW(due(p)):""}・${state.format==="dvd"?"DVD発送 ":"Web配信 "}${fmt(availDate(p))}〜${isLate(p)?"・予定を過ぎています":""}</small></div><div class="seg" role="group" aria-label="状態">${["未着手","視聴済み","復習済み"].map((n,v)=>`<button data-set="${p.id}" data-v="${v}" aria-pressed="${st(p.id)===v}">${n}</button>`).join("")}</div>`
       :`<div class="tx" style="font-weight:500;color:var(--sub)">マスをタップすると記録され、ここに講義名と予定が表示されます。マスの日付は目安の日、No.はTACの講義番号です。</div>`;
