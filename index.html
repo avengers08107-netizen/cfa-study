@@ -306,6 +306,12 @@ input:focus,select:focus{border-color:var(--green);outline:none}
   .kpi .v{font-size:22px}
 }
 @media (max-width:760px) and (min-width:420px){.span-3{grid-column:span 6}}
+/* スマホ：進捗カード → 指標 → カレンダー → これからの予定 → グラフ → 今週・科目 → 弱点 */
+@media (max-width:760px){
+  #page-dash>.dash>.col-main,#page-dash>.dash>.col-side{display:contents!important}
+  #page-dash>.dash>*>*{grid-column:1/-1}
+  .o-hero{order:1}.o-kpi{order:2}.o-cal{order:3}.o-miles{order:4}.o-chart{order:5}.o-tasks{order:6}.o-weak{order:7}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -341,23 +347,23 @@ input:focus,select:focus{border-color:var(--green);outline:none}
           <button class="chip-exam" id="examChip"></button>
         </div>
         <div class="dash">
-          <div class="span-8" style="display:grid;gap:16px;min-width:0">
-            <div class="hero" id="hero"></div>
-            <div class="kpis" id="kpis"></div>
-            <div class="card chart">
+          <div class="span-8 col-main" style="display:grid;gap:16px;min-width:0">
+            <div class="hero o-hero" id="hero"></div>
+            <div class="kpis o-kpi" id="kpis"></div>
+            <div class="card chart o-chart">
               <div class="card-h"><h2>累積の進み具合</h2><small id="chartSub"></small></div>
               <div id="cumChart"></div>
               <div class="legend"><span class="dash" style="--c:var(--sub)">予定</span><span style="--c:var(--green)">視聴済み</span><span style="--c:var(--seen)">復習済み</span></div>
             </div>
-            <div class="dash" style="gap:16px">
+            <div class="dash o-tasks" style="gap:16px">
               <div class="card span-6"><div class="card-h"><h2>今週やること</h2><small id="weekRange"></small></div><div id="tasks"></div></div>
               <div class="card span-6"><div class="card-h"><h2>科目別の進捗</h2><button class="link" data-goto="matrix">マトリクスで見る</button></div><div id="sbars"></div></div>
             </div>
           </div>
-          <div class="span-4 side-col" style="display:grid;gap:16px;align-content:start;min-width:0">
-            <div class="card"><div class="cal-h"><button id="calPrev" aria-label="前の月">‹</button><b id="calTitle"></b><button id="calNext" aria-label="次の月">›</button></div><div class="cal" id="cal"></div><div class="cal-day" id="calDay"></div></div>
-            <div class="card miles"><div class="card-h"><h2>これからの予定</h2></div><div id="miles"></div></div>
-            <div class="card weak"><div class="card-h"><h2>弱点トップ3</h2><button class="link" data-goto="analysis">分析を見る</button></div><div id="weak"></div></div>
+          <div class="span-4 side-col col-side" style="display:grid;gap:16px;align-content:start;min-width:0">
+            <div class="card o-cal"><div class="cal-h"><button id="calPrev" aria-label="前の月">‹</button><b id="calTitle"></b><button id="calNext" aria-label="次の月">›</button></div><div class="cal" id="cal"></div><div class="cal-day" id="calDay"></div></div>
+            <div class="card miles o-miles"><div class="card-h"><h2>これからの予定</h2></div><div id="miles"></div></div>
+            <div class="card weak o-weak"><div class="card-h"><h2>弱点トップ3</h2><button class="link" data-goto="analysis">分析を見る</button></div><div id="weak"></div></div>
           </div>
         </div>
       </section>
